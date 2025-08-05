@@ -1,387 +1,652 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>مالك مكلخ - موقع الأفلام</title>
-  <meta name="description" content="موقع أفلام كورية — واجهة داكنة بحال Netflix.">
-  <style>
-    :root{
-      --bg:#0b0b0b;
-      --card:#141414;
-      --muted:#9a9a9a;
-      --accent:#e50914; /* أحمر شبيه نيتفليكس */
-      --white:#fff;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
-      background:linear-gradient(180deg,#050505 0%, #0b0b0b 100%);
-      color:var(--white);
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-    }
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>TopAflam - أفضل الأفلام والمسلسلات</title>
+    <meta name="description" content="TopAflam - موقع أفلام ومسلسلات. قسم الأفلام الكورية والمسلسلات.">
+    <style>
+      :root {
+        --bg: #070707;
+        --panel: #111;
+        --muted: #a9a9a9;
+        --accent: #e50914;
+        --white: #fff;
+        --glass: rgba(255, 255, 255, 0.03);
+      }
 
-    /* Header */
-    header{
-      position:sticky;
-      top:0;
-      z-index:50;
-      background:rgba(7,7,7,0.65);
-      backdrop-filter: blur(6px);
-      display:flex;
-      align-items:center;
-      gap:18px;
-      padding:12px 20px;
-      border-bottom:1px solid rgba(255,255,255,0.03);
-    }
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      font-weight:700;
-      font-size:1.1rem;
-    }
-    .logo{
-      width:36px;height:36px;border-radius:4px;
-      background:var(--accent);
-      display:flex;align-items:center;justify-content:center;
-      font-weight:900;color:#fff;font-size:1rem;
-      box-shadow:0 3px 10px rgba(229,9,20,0.15);
-    }
-    .search-wrap{margin-left:auto;display:flex;gap:10px;align-items:center;}
-    .search{
-      background:#111;padding:8px;border-radius:6px;display:flex;gap:8px;align-items:center;border:1px solid rgba(255,255,255,0.03);
-    }
-    .search input{
-      background:transparent;border:0;color:var(--white);outline:none;min-width:160px;
-    }
-    .filter{
-      display:flex;gap:8px;align-items:center;margin-right:14px;
-    }
-    .btn{
-      background:var(--accent);color:#fff;padding:8px 12px;border-radius:6px;border:0;cursor:pointer;font-weight:600;
-    }
+      * {
+        box-sizing: border-box
+      }
 
-    /* Hero */
-    .hero{
-      padding:22px 20px 6px;
-    }
-    .hero-top{
-      display:flex;gap:20px;align-items:center;
-    }
-    .hero-poster{width:220px;min-width:140px;height:120px;object-fit:cover;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,0.6);}
-    .hero-info{flex:1}
-    .hero-title{font-size:1.6rem;margin:0 0 6px}
-    .hero-meta{color:var(--muted);font-size:0.95rem;margin-bottom:8px}
-    .hero-actions{display:flex;gap:8px}
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+        background: linear-gradient(180deg, #050505 0%, #0b0b0b 100%);
+        color: var(--white);
+        -webkit-font-smoothing: antialiased
+      }
 
-    /* Grid */
-    .section{padding:18px 20px}
-    .section h3{margin:6px 0 12px;font-size:1.05rem}
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
-      gap:12px;
-    }
-    .card{
-      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-radius:8px;
-      overflow:hidden;
-      transition:transform .18s ease, box-shadow .18s;
-      cursor:pointer;
-      border:1px solid rgba(255,255,255,0.03);
-    }
-    .card:hover{transform:translateY(-6px);box-shadow:0 12px 30px rgba(0,0,0,0.6)}
-    .card img{width:100%;height:220px;object-fit:cover;display:block}
-    .card-body{padding:8px}
-    .card-title{font-size:0.98rem;margin:0 0 6px;min-height:36px}
-    .card-sub{color:var(--muted);font-size:0.85rem}
+      a {
+        color: inherit;
+        text-decoration: none
+      }
 
-    /* Modal */
-    .modal{
-      position:fixed;inset:0;display:grid;place-items:center;
-      background:rgba(0,0,0,0.65);z-index:120;opacity:0;pointer-events:none;transition:opacity .12s;
-    }
-    .modal.open{opacity:1;pointer-events:auto}
-    .modal-card{
-      width:min(980px,96%);background:linear-gradient(180deg,#0f0f0f,#070707);border-radius:10px;padding:18px;border:1px solid rgba(255,255,255,0.04);
-      display:flex;gap:18px;align-items:flex-start;
-    }
-    .modal-left{width:320px}
-    .modal-left img{width:100%;height:100%;object-fit:cover;border-radius:8px}
-    .modal-right{flex:1}
-    .close{background:transparent;border:0;color:var(--muted);font-size:20px;cursor:pointer;position:absolute;right:18px;top:14px}
-    .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-    .tag{background:#151515;padding:6px 8px;border-radius:6px;font-size:0.85rem;border:1px solid rgba(255,255,255,0.02)}
+      /* Header */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        background: linear-gradient(180deg, rgba(8, 8, 8, 0.85), rgba(8, 8, 8, 0.6));
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 10px 18px;
+      }
 
-    /* Responsive tweaks */
-    @media (max-width:800px){
-      .hero-top{flex-direction:column;align-items:flex-start}
-      .hero-poster{width:100%;height:220px}
-      .modal-card{flex-direction:column}
-      .modal-left{width:100%}
-    }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px
+      }
 
-    /* small footer */
-    footer{padding:18px;color:var(--muted);font-size:0.9rem;text-align:center}
-  </style>
-</head>
-<body>
+      .logo {
+        width: 44px;
+        height: 44px;
+        border-radius: 6px;
+        background: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        color: #fff;
+        font-size: 18px;
+        box-shadow: 0 6px 18px rgba(229, 9, 20, 0.14)
+      }
 
-<header>
-  <div class="brand">
-    <div class="logo">MM</div>
-    <div>
-      <div>مالك مكلخ</div>
-      <div style="font-size:0.75rem;color:var(--muted)">موقع الأفلام</div>
-    </div>
-  </div>
+      .site-name {
+        font-weight: 800;
+        font-size: 1.05rem
+      }
 
-  <div class="filter">
-    <select id="genreFilter" title="تصنيف">
-      <option value="all">جميع التصنيفات</option>
-    </select>
+      nav {
+        margin-right: 30px
+      }
 
-    <select id="yearFilter" title="سنة">
-      <option value="all">كل السنوات</option>
-    </select>
-  </div>
+      .nav-links {
+        display: flex;
+        gap: 12px;
+        align-items: center
+      }
 
-  <div class="search-wrap">
-    <div class="search">
-      <input id="q" placeholder="بحث عن فيلم أو مسلسل..." />
-      <button class="btn" id="searchBtn">بحث</button>
-    </div>
-  </div>
-</header>
+      .nav-links a {
+        padding: 8px 12px;
+        border-radius: 6px;
+        color: var(--muted);
+        font-weight: 600
+      }
 
-<main>
-  <!-- Hero (أبرز فيلم) -->
-  <section class="hero" id="hero">
-    <div class="hero-top">
-      <img id="heroPoster" class="hero-poster" src="" alt="poster" />
-      <div class="hero-info">
-        <h2 id="heroTitle" class="hero-title">عنوان الفيلم</h2>
-        <div id="heroMeta" class="hero-meta">سنة • تصنيف • مدة</div>
-        <div class="hero-actions">
-          <button class="btn" id="playHero">مشاهدة</button>
-          <button class="btn" id="moreHero" style="background:transparent;color:var(--white);border:1px solid rgba(255,255,255,0.06)">تفاصيل</button>
+      .nav-links a.active,
+      .nav-links a:hover {
+        color: var(--white);
+        background: rgba(255, 255, 255, 0.03)
+      }
+
+      .actions {
+        margin-left: auto;
+        display: flex;
+        gap: 12px;
+        align-items: center
+      }
+
+      .vip {
+        background: linear-gradient(180deg, var(--accent), #b50712);
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-weight: 700;
+        border: 0;
+        cursor: pointer;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        box-shadow: 0 8px 20px rgba(229, 9, 20, 0.12)
+      }
+
+      .search {
+        background: #0f0f0f;
+        padding: 6px;
+        border-radius: 8px;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        border: 1px solid rgba(255, 255, 255, 0.03)
+      }
+
+      .search input {
+        background: transparent;
+        border: 0;
+        color: var(--white);
+        outline: none;
+        width: 180px
+      }
+
+      /* Hero */
+      .hero {
+        display: flex;
+        gap: 18px;
+        align-items: center;
+        padding: 18px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.02)
+      }
+
+      .hero-poster {
+        width: 220px;
+        height: 130px;
+        border-radius: 8px;
+        object-fit: cover;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6)
+      }
+
+      .hero-info {
+        flex: 1
+      }
+
+      .hero-title {
+        font-size: 1.6rem;
+        margin: 0 0 6px
+      }
+
+      .hero-meta {
+        color: var(--muted);
+        margin-bottom: 10px
+      }
+
+      .hero-actions {
+        display: flex;
+        gap: 10px
+      }
+
+      .btn {
+        padding: 10px 14px;
+        border-radius: 8px;
+        border: 0;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .btn-play {
+        background: var(--accent);
+        color: white
+      }
+
+      .btn-details {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        color: var(--white)
+      }
+
+      /* Sections */
+      .container {
+        padding: 16px
+      }
+
+      .section {
+        margin-top: 14px
+      }
+
+      .section h3 {
+        margin: 8px 0 12px;
+        font-size: 1.05rem
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 12px;
+      }
+
+      .card {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.00));
+        border-radius: 8px;
+        overflow: hidden;
+        cursor: pointer;
+        border: 1px solid rgba(255, 255, 255, 0.03);
+        transition: transform .16s, box-shadow .16s;
+      }
+
+      .card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6)
+      }
+
+      .card img {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        display: block
+      }
+
+      .card-body {
+        padding: 8px
+      }
+
+      .card-title {
+        font-size: 0.98rem;
+        margin: 0 0 6px;
+        min-height: 36px
+      }
+
+      .card-sub {
+        color: var(--muted);
+        font-size: 0.85rem
+      }
+
+      /* Modal */
+      .modal {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 90;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .12s
+      }
+
+      .modal.open {
+        opacity: 1;
+        pointer-events: auto
+      }
+
+      .modal-card {
+        width: min(980px, 96%);
+        background: linear-gradient(180deg, #0f0f0f, #070707);
+        border-radius: 10px;
+        padding: 16px;
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        border: 1px solid rgba(255, 255, 255, 0.04)
+      }
+
+      .modal-left {
+        width: 320px
+      }
+
+      .modal-left img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 8px
+      }
+
+      .modal-right {
+        flex: 1
+      }
+
+      .close {
+        background: transparent;
+        border: 0;
+        color: var(--muted);
+        font-size: 20px;
+        cursor: pointer;
+        position: absolute;
+        right: 18px;
+        top: 12px
+      }
+
+      .tags {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 8px
+      }
+
+      .tag {
+        background: #151515;
+        padding: 6px 8px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        border: 1px solid rgba(255, 255, 255, 0.02)
+      }
+
+      /* small footer */
+      footer {
+        padding: 18px;
+        color: var(--muted);
+        font-size: 0.9rem;
+        text-align: center;
+        margin-top: 14px
+      }
+
+      /* responsive */
+      @media (max-width:800px) {
+        .hero {
+          flex-direction: column;
+          align-items: flex-start
+        }
+
+        .hero-poster {
+          width: 100%;
+          height: 240px
+        }
+
+        .modal-card {
+          flex-direction: column
+        }
+
+        .modal-left {
+          width: 100%
+        }
+
+        .search input {
+          width: 100px
+        }
+
+        .nav-links {
+          display: flex;
+          gap: 6px;
+          overflow: auto;
+          padding-bottom: 6px
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <div class="brand">
+        <div class="logo">TA</div>
+        <div>
+          <div class="site-name">TopAflam</div>
+          <div style="font-size:0.75rem;color:var(--muted)">أفضل الأفلام والمسلسلات</div>
         </div>
-        <p id="heroDesc" style="margin-top:10px;color:var(--muted);max-width:70%"></p>
+      </div>
+      <nav>
+        <div class="nav-links">
+          <a href="#" class="nav-link active" data-filter="all">الأفلام</a>
+          <a href="#" class="nav-link" data-filter="series">المسلسلات</a>
+          <a href="#" class="nav-link" data-filter="kmovies">الأفلام الكورية</a>
+          <a href="#" class="nav-link" data-filter="kseries">المسلسلات الكورية</a>
+        </div>
+      </nav>
+      <div class="actions">
+        <div class="search">
+          <input id="q" placeholder="بحث..." />
+        </div>
+        <button class="vip" id="vipBtn">شراء عضوية VIP</button>
+      </div>
+    </header>
+    <!-- Hero -->
+    <section class="hero">
+      <img id="heroPoster" class="hero-poster" src="https://i.imgur.com/bHq76RT.jpg" alt="poster">
+      <div class="hero-info">
+        <h2 id="heroTitle" class="hero-title">المحقق الماهر</h2>
+        <div id="heroMeta" class="hero-meta">2021 • جريمة • 2h 10m</div>
+        <div class="hero-actions">
+          <button class="btn btn-play" id="playHero">مشاهدة</button>
+          <button class="btn btn-details" id="moreHero">تفاصيل</button>
+        </div>
+        <p id="heroDesc" style="color:var(--muted);margin-top:10px;max-width:80%;">دراما بوليسية مشوقة تتبع قصة محقق يحاول حل لغز جرائم متسلسلة.</p>
+      </div>
+    </section>
+    <!-- Content -->
+    <main class="container">
+      <section class="section">
+        <h3>الأفلام</h3>
+        <div class="grid" id="moviesGrid"></div>
+      </section>
+      <section class="section" id="seriesSection" style="display:none">
+        <h3>المسلسلات</h3>
+        <div class="grid" id="seriesGrid"></div>
+      </section>
+      <footer>© TopAflam — جميع الحقوق محفوظة</footer>
+    </main>
+    <!-- Modal -->
+    <div id="modal" class="modal" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true">
+        <button class="close" id="closeModal">✕</button>
+        <div class="modal-left">
+          <img id="modalPoster" src="" alt="poster">
+        </div>
+        <div class="modal-right">
+          <h2 id="modalTitle">عنوان الفيلم</h2>
+          <div id="modalMeta" class="hero-meta">سنة • نوع • مدة</div>
+          <div class="tags" id="modalTags"></div>
+          <p id="modalDesc" style="color:var(--muted);margin-top:12px;line-height:1.5"></p>
+          <div style="margin-top:16px;display:flex;gap:10px">
+            <a id="watchLink" class="btn btn-play" href="#" target="_blank">مشاهدة</a>
+            <button id="closeBtn" class="btn btn-details">إغلاق</button>
+          </div>
+        </div>
       </div>
     </div>
-  </section>
-
-  <!-- Grid -->
-  <section class="section">
-    <h3>الأفلام</h3>
-    <div class="grid" id="moviesGrid">
-      <!-- بطاقات تتولد بالجاڤاسكريبت -->
-    </div>
-  </section>
-
-  <footer>© مالك مكلخ — موقع أفلام بسيط</footer>
-</main>
-
-<!-- Modal details -->
-<div id="modal" class="modal" aria-hidden="true">
-  <div class="modal-card" role="dialog" aria-modal="true">
-    <button class="close" id="closeModal">✕</button>
-    <div class="modal-left">
-      <img id="modalPoster" src="" alt="poster" />
-    </div>
-    <div class="modal-right">
-      <h2 id="modalTitle">عنوان الفيلم</h2>
-      <div id="modalMeta" class="hero-meta">سنة • تصنيف • مدة</div>
-      <div class="tags" id="modalTags"></div>
-      <p id="modalDesc" style="margin-top:12px;color:var(--muted);line-height:1.5"></p>
-      <div style="margin-top:16px;display:flex;gap:10px">
-        <a id="watchLink" class="btn" href="#" target="_blank">مشاهدة</a>
-        <button id="closeBtn" class="btn" style="background:#333;border:1px solid rgba(255,255,255,0.04)">إغلاق</button>
+    <!-- VIP Modal (simple) -->
+    <div id="vipModal" class="modal" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" style="max-width:520px;align-items:center">
+        <button class="close" onclick="closeVip()" style="position:absolute;right:18px;top:12px">✕</button>
+        <div style="text-align:center;padding:8px">
+          <div style="font-size:22px;font-weight:800;margin-bottom:8px">شراء عضوية VIP</div>
+          <p style="color:var(--muted)">العضوية تمنح مشاهدة بدون إعلانات و جودة أعلى (هذا مثال توضيحي).</p>
+          <div style="display:flex;gap:10px;justify-content:center;margin-top:12px">
+            <button class="btn btn-play" onclick="buyVip('شهر')">اشترِ (شهر) - 30 درهم</button>
+            <button class="btn btn-details" onclick="buyVip('سنة')">اشترِ (سنة) - 300 درهم</button>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
+    <script>
+      /* ===== بيانات مبدئية للأفلام والمسلسلات ===== */
+      const movies = [{
+        id: 1,
+        title: "المحقق الماهر",
+        year: 2021,
+        category: "movies",
+        genre: ["جريمة", "تشويق"],
+        duration: "2h 10m",
+        img: "https://i.imgur.com/bHq76RT.jpg",
+        desc: "دراما بوليسية مشوقة تتبع قضية جرائم متسلسلة.",
+        watch: "#"
+      }, {
+        id: 2,
+        title: "حب في سيول",
+        year: 2019,
+        category: "movies",
+        genre: ["رومانس", "دراما"],
+        duration: "1h 48m",
+        img: "https://i.imgur.com/dlXkgHY.jpg",
+        desc: "قصة رومانسية مؤثرة في قلب سيول.",
+        watch: "#"
+      }, {
+        id: 3,
+        title: "المنتقم الكوري",
+        year: 2023,
+        category: "kmovies",
+        genre: ["أكشن", "إثارة"],
+        duration: "2h 05m",
+        img: "https://i.imgur.com/5rC8tEg.jpg",
+        desc: "شاب يسعى للانتقام بعد حدث مأساوي.",
+        watch: "#"
+      }, {
+        id: 4,
+        title: "دراما شارع",
+        year: 2020,
+        category: "series",
+        genre: ["دراما"],
+        duration: "موسم 1",
+        img: "https://i.imgur.com/3GvwNBf.jpg",
+        desc: "مسلسل اجتماعي يروي قصص الحياة اليومية.",
+        watch: "#"
+      }, {
+        id: 5,
+        title: "قصة كورية",
+        year: 2022,
+        category: "kseries",
+        genre: ["رومانس", "كوميديا"],
+        duration: "موسم 1",
+        img: "https://i.imgur.com/7D2GJQd.jpg",
+        desc: "مسلسل كوري رومانسي طريف.",
+        watch: "#"
+      }];
+      const moviesGrid = document.getElementById('moviesGrid');
+      const seriesGrid = document.getElementById('seriesGrid');
+      const heroPoster = document.getElementById('heroPoster');
+      const heroTitle = document.getElementById('heroTitle');
+      const heroMeta = document.getElementById('heroMeta');
+      const heroDesc = document.getElementById('heroDesc');
+      const playHero = document.getElementById('playHero');
+      const moreHero = document.getElementById('moreHero');
+      const qInput = document.getElementById('q');
+      const navLinks = document.querySelectorAll('.nav-link');
+      const modal = document.getElementById('modal');
+      const modalPoster = document.getElementById('modalPoster');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalMeta = document.getElementById('modalMeta');
+      const modalTags = document.getElementById('modalTags');
+      const modalDesc = document.getElementById('modalDesc');
+      const watchLink = document.getElementById('watchLink');
+      const closeModal = document.getElementById('closeModal');
+      const closeBtn = document.getElementById('closeBtn');
+      const vipBtn = document.getElementById('vipBtn');
+      const vipModal = document.getElementById('vipModal');
+      /* ===== وظائف ===== */
+      function renderGrid(filter = 'all', query = '') {
+        moviesGrid.innerHTML = '';
+        seriesGrid && (seriesGrid.innerHTML = '');
+        const q = (query || '').trim().toLowerCase();
+        const filtered = movies.filter(m => {
+          if (filter === 'all') return q ? (m.title + m.desc + m.genre.join(' ')).toLowerCase().includes(q) : true;
+          if (filter === 'series') return m.category === 'series';
+          if (filter === 'kmovies') return m.category === 'kmovies';
+          if (filter === 'kseries') return m.category === 'kseries';
+          return m.category === filter;
+        });
+        // hero set to first item
+        if (filtered.length) setHero(filtered[0]);
+        else {
+          heroPoster.src = '';
+          heroTitle.textContent = 'ما كينش نتائج';
+          heroMeta.textContent = '';
+          heroDesc.textContent = '';
+        }
+        filtered.forEach(m => {
+          const c = document.createElement('div');
+          c.className = 'card';
+          c.innerHTML = `
+						<img loading="lazy" src="${m.img}" alt="${m.title}" />
+						<div class="card-body">
+							<div class="card-title">${m.title}</div>
+							<div class="card-sub">${m.year} • ${m.genre[0]||''}</div>
+						</div>`;
+          c.onclick = () => openModal(m);
+          if (m.category === 'series' || m.category === 'kseries') {
+            seriesGrid && seriesGrid.appendChild(c);
+          } else {
+            moviesGrid.appendChild(c);
+          }
+        });
+        if (filtered.length === 0) {
+          moviesGrid.innerHTML = ' < div style = "color:var(--muted);padding:12px" > ما كاين حتى نتيجة. < /div>';
+        }
+      }
 
-<script>
-/* ===== بيانات الأفلام: عدل أو زيد هنا =====
-   كل فيلم: id, title, year, genre(array), duration, img, desc, watch (رابط خارجي)
-*/
-const movies = [
-  {
-    id:1,
-    title: "المحقق الماهر",
-    year: 2021,
-    genre: ["تشويق","جريمة"],
-    duration: "2h 10m",
-    img: "https://i.imgur.com/bHq76RT.jpg",
-    desc: "دراما بوليسية مشوقة تتبع قصة محقق يحاول حل لغز جرائم متسلسلة.",
-    watch: "https://example.com/watch/1"
-  },
-  {
-    id:2,
-    title: "حب في سيول",
-    year: 2019,
-    genre: ["رومانس","دراما"],
-    duration: "1h 48m",
-    img: "https://i.imgur.com/dlXkgHY.jpg",
-    desc: "قصة رومانسية مؤثرة عن لقاء غير متوقع بين اثنين في العاصمة سيول.",
-    watch: "https://example.com/watch/2"
-  },
-  {
-    id:3,
-    title: "المنتقم الكوري",
-    year: 2023,
-    genre: ["أكشن","إثارة"],
-    duration: "2h 05m",
-    img: "https://i.imgur.com/5rC8tEg.jpg",
-    desc: "فيلم أكشن مشوق عن شاب يسعى للانتقام بعد حدث مأساوي.",
-    watch: "https://example.com/watch/3"
-  },
-  // زيد أفلام كما بغيتي...
-];
+      function setHero(movie) {
+        heroPoster.src = movie.img;
+        heroTitle.textContent = movie.title;
+        heroMeta.textContent = $ {
+          movie.year
+        }•
+        $ {
+          movie.genre.join('، ')
+        }•
+        $ {
+          movie.duration
+        };
+        heroDesc.textContent = movie.desc;
+        playHero.onclick = () => window.open(movie.watch, '_blank');
+        moreHero.onclick = () => openModal(movie);
+      }
 
-/* ===== عناصر DOM ===== */
-const moviesGrid = document.getElementById('moviesGrid');
-const heroPoster = document.getElementById('heroPoster');
-const heroTitle = document.getElementById('heroTitle');
-const heroMeta = document.getElementById('heroMeta');
-const heroDesc = document.getElementById('heroDesc');
-const playHero = document.getElementById('playHero');
-const moreHero = document.getElementById('moreHero');
+      function openModal(movie) {
+        modalPoster.src = movie.img;
+        modalTitle.textContent = movie.title;
+        modalMeta.textContent = $ {
+          movie.year
+        }•
+        $ {
+          movie.genre.join('، ')
+        }•
+        $ {
+          movie.duration
+        };
+        modalTags.innerHTML = '';
+        movie.genre.forEach(g => {
+          const el = document.createElement('div');
+          el.className = 'tag';
+          el.textContent = g;
+          modalTags.appendChild(el);
+        });
+        modalDesc.textContent = movie.desc;
+        watchLink.href = movie.watch || '#';
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      }
 
-const qInput = document.getElementById('q');
-const searchBtn = document.getElementById('searchBtn');
-const genreFilter = document.getElementById('genreFilter');
-const yearFilter = document.getElementById('yearFilter');
+      function closeModalFn() {
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      }
+      closeModal.onclick = closeModalFn;
+      closeBtn.onclick = closeModalFn;
+      modal.onclick = (e) => {
+        if (e.target === modal) closeModalFn();
+      }
+      // nav links
+      navLinks.forEach(a => {
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          navLinks.forEach(x => x.classList.remove('active'));
+          a.classList.add('active');
+          const filter = a.getAttribute('data-filter');
+          document.getElementById('seriesSection').style.display = (filter === 'series' || filter === 'kseries') ? 'block' : 'none';
+          renderGrid(filter, qInput.value);
+        });
+      });
+      // search
+      qInput.addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') renderGrid(document.querySelector('.nav-link.active').getAttribute('data-filter'), qInput.value);
+      });
+      // VIP
+      vipBtn.addEventListener('click', () => {
+        vipModal.classList.add('open');
+        vipModal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      });
 
-const modal = document.getElementById('modal');
-const modalPoster = document.getElementById('modalPoster');
-const modalTitle = document.getElementById('modalTitle');
-const modalMeta = document.getElementById('modalMeta');
-const modalTags = document.getElementById('modalTags');
-const modalDesc = document.getElementById('modalDesc');
-const watchLink = document.getElementById('watchLink');
-const closeModal = document.getElementById('closeModal');
-const closeBtn = document.getElementById('closeBtn');
+      function closeVip() {
+        vipModal.classList.remove('open');
+        vipModal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      }
+      window.closeVip = closeVip;
 
-/* ===== وظائف العرض ===== */
-function unique(arr){ return [...new Set(arr)]; }
-
-function initFilters(){
-  // جمع التصنيفات والسنوات
-  const allGenres = movies.flatMap(m=>m.genre);
-  const uniqGenres = unique(allGenres);
-  uniqGenres.forEach(g=>{
-    const opt = document.createElement('option');
-    opt.value = g; opt.textContent = g;
-    genreFilter.appendChild(opt);
-  });
-
-  const years = movies.map(m=>m.year).sort((a,b)=>b-a);
-  unique(years).forEach(y=>{
-    const opt = document.createElement('option');
-    opt.value = y; opt.textContent = y;
-    yearFilter.appendChild(opt);
-  });
-}
-
-function setHero(movie){
-  heroPoster.src = movie.img;
-  heroTitle.textContent = movie.title;
-  heroMeta.textContent = ${movie.year} • ${movie.genre.join('، ')} • ${movie.duration};
-  heroDesc.textContent = movie.desc;
-  playHero.onclick = ()=> window.open(movie.watch,'_blank');
-  moreHero.onclick = ()=> openModal(movie);
-}
-
-function renderGrid(list){
-  moviesGrid.innerHTML = '';
-  if(list.length===0){
-    moviesGrid.innerHTML = '<div style="color:var(--muted);padding:12px">ما كاين حتى فيلم مطابق.</div>';
-    return;
-  }
-  list.forEach(m=>{
-    const c = document.createElement('div');
-    c.className = 'card';
-    c.innerHTML = `
-      <img loading="lazy" src="${m.img}" alt="${m.title}" />
-      <div class="card-body">
-        <div class="card-title">${m.title}</div>
-        <div class="card-sub">${m.year} • ${m.genre[0] || ''}</div>
-      </div>
-    `;
-    c.onclick = ()=> openModal(m);
-    moviesGrid.appendChild(c);
-  });
-}
-
-/* ===== Modal ===== */
-function openModal(movie){
-  modalPoster.src = movie.img;
-  modalTitle.textContent = movie.title;
-  modalMeta.textContent = ${movie.year} • ${movie.genre.join('، ')} • ${movie.duration};
-  modalTags.innerHTML = '';
-  movie.genre.forEach(g=>{
-    const span = document.createElement('div');
-    span.className = 'tag'; span.textContent = g;
-    modalTags.appendChild(span);
-  });
-  modalDesc.textContent = movie.desc;
-  watchLink.href = movie.watch || '#';
-  modal.classList.add('open');
-  modal.setAttribute('aria-hidden','false');
-  document.body.style.overflow='hidden';
-}
-
-function closeModalFn(){
-  modal.classList.remove('open');
-  modal.setAttribute('aria-hidden','true');
-  document.body.style.overflow='';
-}
-
-/* ===== البحث والفلاتر ===== */
-function applyFilters(){
-  const q = qInput.value.trim().toLowerCase();
-  const genre = genreFilter.value;
-  const year = yearFilter.value;
-
-  let list = movies.filter(m=>{
-    let ok = true;
-    if(q){
-      ok = (m.title + ' ' + m.desc + ' ' + m.genre.join(' ')).toLowerCase().includes(q);
-    }
-    if(ok && genre !== 'all'){
-      ok = m.genre.includes(genre);
-    }
-    if(ok && year !== 'all'){
-      ok = String(m.year) === String(year);
-    }
-    return ok;
-  });
-  renderGrid(list);
-  if(list.length) setHero(list[0]);
-}
-
-/* ===== init ===== */
-(function init(){
-  initFilters();
-  renderGrid(movies);
-  setHero(movies[0]);
-
-  searchBtn.onclick = applyFilters;
-  qInput.onkeyup = (e)=> { if(e.key==='Enter') applyFilters(); }
-  genreFilter.onchange = applyFilters;
-  yearFilter.onchange = applyFilters;
-
-  closeModal.onclick = closeModalFn;
-  closeBtn.onclick = closeModalFn;
-  modal.onclick = (e)=> { if(e.target===modal) closeModalFn(); }
-
-})();
-</script>
-
-</body>
+      function buyVip(type) {
+        alert('شكراً! طلب شراء عضوية VIP (' + type + ') — هذا مجرد نموذج تجريبي.');
+        closeVip();
+      }
+      window.buyVip = buyVip;
+      // init
+      (function init() {
+        renderGrid('all', '');
+        // set default hero
+        if (movies.length) setHero(movies[0]);
+      })();
+    </script>
+  </body>
 </html>
